@@ -1,6 +1,6 @@
 ﻿namespace RSAEncrypt
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -54,41 +54,47 @@
             lb_WarningQ = new Label();
             bt_CalcN = new Button();
             bt_CalcU = new Button();
+            lb_WarningE = new Label();
+            bt_CalcD = new Button();
+            lb_WarningD = new Label();
+            textBox1 = new TextBox();
+            label7 = new Label();
             SuspendLayout();
             // 
             // tb_CipherText
             // 
-            tb_CipherText.Location = new Point(30, 399);
+            tb_CipherText.Location = new Point(62, 403);
             tb_CipherText.Multiline = true;
             tb_CipherText.Name = "tb_CipherText";
-            tb_CipherText.Size = new Size(393, 81);
+            tb_CipherText.Size = new Size(492, 81);
             tb_CipherText.TabIndex = 0;
             // 
             // tb_PlainText
             // 
-            tb_PlainText.Location = new Point(30, 276);
+            tb_PlainText.Location = new Point(62, 276);
             tb_PlainText.Multiline = true;
             tb_PlainText.Name = "tb_PlainText";
-            tb_PlainText.Size = new Size(393, 81);
+            tb_PlainText.Size = new Size(492, 81);
             tb_PlainText.TabIndex = 2;
             // 
             // bt_Decrypt
             // 
             bt_Decrypt.Font = new Font("Anton", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
-            bt_Decrypt.Location = new Point(436, 399);
+            bt_Decrypt.Location = new Point(633, 377);
             bt_Decrypt.Name = "bt_Decrypt";
             bt_Decrypt.Size = new Size(115, 56);
             bt_Decrypt.TabIndex = 3;
             bt_Decrypt.Text = "Decrypt";
             bt_Decrypt.UseVisualStyleBackColor = true;
+            bt_Decrypt.Click += bt_Decrypt_Click;
             // 
             // lb_RSA
             // 
             lb_RSA.AutoSize = true;
-            lb_RSA.Font = new Font("Anton", 20.25F, FontStyle.Regular, GraphicsUnit.Point);
+            lb_RSA.Font = new Font("Anton", 21.7499981F, FontStyle.Regular, GraphicsUnit.Point);
             lb_RSA.Location = new Point(12, 9);
             lb_RSA.Name = "lb_RSA";
-            lb_RSA.Size = new Size(174, 41);
+            lb_RSA.Size = new Size(189, 44);
             lb_RSA.TabIndex = 4;
             lb_RSA.Text = "RSA Encryption";
             // 
@@ -96,15 +102,15 @@
             // 
             tb_PrimeP.Location = new Point(95, 100);
             tb_PrimeP.Name = "tb_PrimeP";
-            tb_PrimeP.Size = new Size(100, 23);
+            tb_PrimeP.Size = new Size(220, 23);
             tb_PrimeP.TabIndex = 5;
             tb_PrimeP.TextChanged += tb_PrimeP_TextChanged;
             // 
             // tb_PrimeQ
             // 
-            tb_PrimeQ.Location = new Point(412, 100);
+            tb_PrimeQ.Location = new Point(501, 100);
             tb_PrimeQ.Name = "tb_PrimeQ";
-            tb_PrimeQ.Size = new Size(100, 23);
+            tb_PrimeQ.Size = new Size(220, 23);
             tb_PrimeQ.TabIndex = 6;
             tb_PrimeQ.TextChanged += tb_PrimeQ_TextChanged;
             // 
@@ -113,7 +119,7 @@
             tb_uValue.Location = new Point(95, 199);
             tb_uValue.Name = "tb_uValue";
             tb_uValue.ReadOnly = true;
-            tb_uValue.Size = new Size(100, 23);
+            tb_uValue.Size = new Size(220, 23);
             tb_uValue.TabIndex = 7;
             // 
             // lb_PrimeP
@@ -132,7 +138,7 @@
             lb_PrimeQ.AutoSize = true;
             lb_PrimeQ.Font = new Font("Anton", 11.249999F, FontStyle.Regular, GraphicsUnit.Point);
             lb_PrimeQ.ForeColor = Color.FromArgb(0, 0, 192);
-            lb_PrimeQ.Location = new Point(347, 100);
+            lb_PrimeQ.Location = new Point(436, 101);
             lb_PrimeQ.Name = "lb_PrimeQ";
             lb_PrimeQ.Size = new Size(59, 23);
             lb_PrimeQ.TabIndex = 9;
@@ -154,7 +160,7 @@
             tb_nValue.Location = new Point(95, 152);
             tb_nValue.Name = "tb_nValue";
             tb_nValue.ReadOnly = true;
-            tb_nValue.Size = new Size(100, 23);
+            tb_nValue.Size = new Size(220, 23);
             tb_nValue.TabIndex = 11;
             // 
             // label2
@@ -170,24 +176,26 @@
             // 
             // tb_eValue
             // 
-            tb_eValue.Location = new Point(412, 152);
+            tb_eValue.Location = new Point(501, 153);
             tb_eValue.Name = "tb_eValue";
-            tb_eValue.Size = new Size(100, 23);
+            tb_eValue.Size = new Size(220, 23);
             tb_eValue.TabIndex = 13;
+            tb_eValue.TextChanged += tb_eValue_TextChanged;
             // 
             // tb_dValue
             // 
-            tb_dValue.Location = new Point(412, 199);
+            tb_dValue.Location = new Point(501, 200);
             tb_dValue.Name = "tb_dValue";
-            tb_dValue.Size = new Size(100, 23);
+            tb_dValue.Size = new Size(220, 23);
             tb_dValue.TabIndex = 14;
+            tb_dValue.TextChanged += tb_dValue_TextChanged;
             // 
             // label3
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Anton", 11.249999F, FontStyle.Regular, GraphicsUnit.Point);
             label3.ForeColor = Color.FromArgb(0, 0, 192);
-            label3.Location = new Point(385, 152);
+            label3.Location = new Point(474, 153);
             label3.Name = "label3";
             label3.Size = new Size(21, 23);
             label3.TabIndex = 15;
@@ -198,7 +206,7 @@
             label4.AutoSize = true;
             label4.Font = new Font("Anton", 11.249999F, FontStyle.Regular, GraphicsUnit.Point);
             label4.ForeColor = Color.FromArgb(0, 0, 192);
-            label4.Location = new Point(385, 199);
+            label4.Location = new Point(474, 200);
             label4.Name = "label4";
             label4.Size = new Size(21, 23);
             label4.TabIndex = 16;
@@ -207,7 +215,7 @@
             // bt_Encrypt
             // 
             bt_Encrypt.Font = new Font("Anton", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
-            bt_Encrypt.Location = new Point(436, 276);
+            bt_Encrypt.Location = new Point(633, 290);
             bt_Encrypt.Name = "bt_Encrypt";
             bt_Encrypt.Size = new Size(115, 57);
             bt_Encrypt.TabIndex = 17;
@@ -229,7 +237,7 @@
             // 
             label6.AutoSize = true;
             label6.Font = new Font("Anton", 11.249999F, FontStyle.Regular, GraphicsUnit.Point);
-            label6.Location = new Point(28, 373);
+            label6.Location = new Point(28, 377);
             label6.Name = "label6";
             label6.Size = new Size(73, 23);
             label6.TabIndex = 19;
@@ -240,9 +248,9 @@
             bt_GenerateP.BackColor = Color.Transparent;
             bt_GenerateP.Font = new Font("Anton", 9.749999F, FontStyle.Italic, GraphicsUnit.Point);
             bt_GenerateP.ForeColor = Color.FromArgb(192, 64, 0);
-            bt_GenerateP.Location = new Point(201, 100);
+            bt_GenerateP.Location = new Point(321, 100);
             bt_GenerateP.Name = "bt_GenerateP";
-            bt_GenerateP.Size = new Size(64, 23);
+            bt_GenerateP.Size = new Size(64, 24);
             bt_GenerateP.TabIndex = 20;
             bt_GenerateP.Text = "Generate";
             bt_GenerateP.UseVisualStyleBackColor = false;
@@ -252,24 +260,26 @@
             // 
             bt_GenerateQ.Font = new Font("Anton", 9.749999F, FontStyle.Italic, GraphicsUnit.Point);
             bt_GenerateQ.ForeColor = Color.FromArgb(192, 64, 0);
-            bt_GenerateQ.Location = new Point(518, 101);
+            bt_GenerateQ.Location = new Point(727, 101);
             bt_GenerateQ.Name = "bt_GenerateQ";
-            bt_GenerateQ.Size = new Size(64, 23);
+            bt_GenerateQ.Size = new Size(64, 25);
             bt_GenerateQ.TabIndex = 21;
             bt_GenerateQ.Text = "Generate";
             bt_GenerateQ.UseVisualStyleBackColor = true;
+            bt_GenerateQ.Click += bt_GenerateQ_Click;
             // 
             // bt_GenerateE
             // 
             bt_GenerateE.BackColor = Color.Transparent;
             bt_GenerateE.Font = new Font("Anton", 9.749999F, FontStyle.Italic, GraphicsUnit.Point);
             bt_GenerateE.ForeColor = Color.FromArgb(192, 64, 0);
-            bt_GenerateE.Location = new Point(518, 153);
+            bt_GenerateE.Location = new Point(727, 155);
             bt_GenerateE.Name = "bt_GenerateE";
             bt_GenerateE.Size = new Size(64, 23);
             bt_GenerateE.TabIndex = 22;
             bt_GenerateE.Text = "Generate";
             bt_GenerateE.UseVisualStyleBackColor = false;
+            bt_GenerateE.Click += bt_GenerateE_Click;
             // 
             // lb_WarningP
             // 
@@ -286,7 +296,7 @@
             lb_WarningQ.AutoSize = true;
             lb_WarningQ.Font = new Font("Anton", 9.749999F, FontStyle.Italic, GraphicsUnit.Point);
             lb_WarningQ.ForeColor = Color.Red;
-            lb_WarningQ.Location = new Point(347, 67);
+            lb_WarningQ.Location = new Point(501, 67);
             lb_WarningQ.Name = "lb_WarningQ";
             lb_WarningQ.Size = new Size(0, 19);
             lb_WarningQ.TabIndex = 24;
@@ -296,7 +306,7 @@
             bt_CalcN.BackColor = Color.Transparent;
             bt_CalcN.Font = new Font("Anton", 9.749999F, FontStyle.Italic, GraphicsUnit.Point);
             bt_CalcN.ForeColor = Color.FromArgb(192, 64, 0);
-            bt_CalcN.Location = new Point(201, 152);
+            bt_CalcN.Location = new Point(321, 153);
             bt_CalcN.Name = "bt_CalcN";
             bt_CalcN.Size = new Size(64, 23);
             bt_CalcN.TabIndex = 25;
@@ -309,7 +319,7 @@
             bt_CalcU.BackColor = Color.Transparent;
             bt_CalcU.Font = new Font("Anton", 9.749999F, FontStyle.Italic, GraphicsUnit.Point);
             bt_CalcU.ForeColor = Color.FromArgb(192, 64, 0);
-            bt_CalcU.Location = new Point(201, 200);
+            bt_CalcU.Location = new Point(321, 201);
             bt_CalcU.Name = "bt_CalcU";
             bt_CalcU.Size = new Size(64, 23);
             bt_CalcU.TabIndex = 26;
@@ -317,11 +327,67 @@
             bt_CalcU.UseVisualStyleBackColor = false;
             bt_CalcU.Click += bt_CalcU_Click;
             // 
-            // Form1
+            // lb_WarningE
+            // 
+            lb_WarningE.AutoSize = true;
+            lb_WarningE.Font = new Font("Anton", 9.749999F, FontStyle.Italic, GraphicsUnit.Point);
+            lb_WarningE.ForeColor = Color.FromArgb(0, 0, 192);
+            lb_WarningE.Location = new Point(501, 131);
+            lb_WarningE.Name = "lb_WarningE";
+            lb_WarningE.Size = new Size(0, 19);
+            lb_WarningE.TabIndex = 27;
+            // 
+            // bt_CalcD
+            // 
+            bt_CalcD.BackColor = Color.Transparent;
+            bt_CalcD.Font = new Font("Anton", 9.749999F, FontStyle.Italic, GraphicsUnit.Point);
+            bt_CalcD.ForeColor = Color.FromArgb(192, 64, 0);
+            bt_CalcD.Location = new Point(727, 201);
+            bt_CalcD.Name = "bt_CalcD";
+            bt_CalcD.Size = new Size(64, 23);
+            bt_CalcD.TabIndex = 28;
+            bt_CalcD.Text = "Cal";
+            bt_CalcD.UseVisualStyleBackColor = false;
+            bt_CalcD.Click += bt_CalcD_Click;
+            // 
+            // lb_WarningD
+            // 
+            lb_WarningD.AutoSize = true;
+            lb_WarningD.Font = new Font("Anton", 9.749999F, FontStyle.Italic, GraphicsUnit.Point);
+            lb_WarningD.ForeColor = Color.FromArgb(0, 0, 192);
+            lb_WarningD.Location = new Point(501, 178);
+            lb_WarningD.Name = "lb_WarningD";
+            lb_WarningD.Size = new Size(0, 19);
+            lb_WarningD.TabIndex = 29;
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(62, 518);
+            textBox1.Multiline = true;
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(492, 81);
+            textBox1.TabIndex = 30;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Font = new Font("Anton", 11.249999F, FontStyle.Regular, GraphicsUnit.Point);
+            label7.Location = new Point(30, 492);
+            label7.Name = "label7";
+            label7.Size = new Size(94, 23);
+            label7.TabIndex = 31;
+            label7.Text = "DecryptedText";
+            // 
+            // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(809, 621);
+            ClientSize = new Size(833, 629);
+            Controls.Add(label7);
+            Controls.Add(textBox1);
+            Controls.Add(lb_WarningD);
+            Controls.Add(bt_CalcD);
+            Controls.Add(lb_WarningE);
             Controls.Add(bt_CalcU);
             Controls.Add(bt_CalcN);
             Controls.Add(lb_WarningQ);
@@ -348,7 +414,7 @@
             Controls.Add(bt_Decrypt);
             Controls.Add(tb_PlainText);
             Controls.Add(tb_CipherText);
-            Name = "Form1";
+            Name = "MainForm";
             Text = "Form1";
             ResumeLayout(false);
             PerformLayout();
@@ -382,5 +448,10 @@
         private Label lb_WarningQ;
         private Button bt_CalcN;
         private Button bt_CalcU;
+        private Label lb_WarningE;
+        private Button bt_CalcD;
+        private Label lb_WarningD;
+        private TextBox textBox1;
+        private Label label7;
     }
 }
