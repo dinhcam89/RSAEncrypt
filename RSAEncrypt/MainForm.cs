@@ -15,7 +15,6 @@ namespace RSAEncrypt
         }
 
         public List<BigInteger> cipherText = new List<BigInteger>();
-        static Dictionary<char, BigInteger> alphabetDictionary = new Dictionary<char, BigInteger>();
 
         static bool IsPrime(int number)
         {
@@ -50,12 +49,12 @@ namespace RSAEncrypt
                     if (IsPrime(smallInt))
                     {
                         lb_WarningP.ForeColor = System.Drawing.Color.Green;
-                        lb_WarningP.Text = $"{bigInt} is a prime number!";
+                        lb_WarningP.Text = "Valid Input!";
                     }
                     else
                     {
                         lb_WarningP.ForeColor = System.Drawing.Color.Red;
-                        lb_WarningP.Text = $"{bigInt} is not a prime number.";
+                        lb_WarningP.Text = "Invalid input. Please enter a valid integer.";
                     }
                 }
                 //Check prime for "BigInt" value
@@ -64,12 +63,12 @@ namespace RSAEncrypt
                     if (BigInt.Program.isPrime(bigInt))
                     {
                         lb_WarningP.ForeColor = System.Drawing.Color.Green;
-                        lb_WarningP.Text = $"{bigInt} is a prime number!";
+                        lb_WarningP.Text = "Valid Input!";
                     }
                     else
                     {
                         lb_WarningP.ForeColor = System.Drawing.Color.Red;
-                        lb_WarningP.Text = $"{bigInt} is not a prime number.";
+                        lb_WarningP.Text = "Invalid input. Please enter a valid integer.";
                     }
                 }
             }
@@ -91,12 +90,12 @@ namespace RSAEncrypt
                     if (IsPrime(smallInt))
                     {
                         lb_WarningQ.ForeColor = System.Drawing.Color.Green;
-                        lb_WarningQ.Text = $"{bigInt} is a prime number!";
+                        lb_WarningQ.Text = "Valid Input!";
                     }
                     else
                     {
                         lb_WarningQ.ForeColor = System.Drawing.Color.Red;
-                        lb_WarningQ.Text = $"{bigInt} is not a prime number.";
+                        lb_WarningQ.Text = "Invalid input. Please enter a valid integer.";
                     }
                 }
                 //Check prime for "BigInt" value
@@ -105,12 +104,12 @@ namespace RSAEncrypt
                     if (BigInt.Program.isPrime(bigInt))
                     {
                         lb_WarningQ.ForeColor = System.Drawing.Color.Green;
-                        lb_WarningQ.Text = $"{bigInt} is a prime number!";
+                        lb_WarningQ.Text = "Valid Input!";
                     }
                     else
                     {
                         lb_WarningQ.ForeColor = System.Drawing.Color.Red;
-                        lb_WarningQ.Text = $"{bigInt} is not a prime number.";
+                        lb_WarningQ.Text = "Invalid input. Please enter a valid integer.";
                     }
                 }
             }
@@ -123,12 +122,6 @@ namespace RSAEncrypt
         //
         //
         //
-
-        //TESTING PURPOSE
-        public static string RemoveSpecialCharacters(string str)
-        {
-            return Regex.Replace(str, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
-        }
 
         //
         //MAPPING STRING PARTS WITH CORRESPONDING INTERGER POSITION
@@ -187,7 +180,6 @@ namespace RSAEncrypt
                 // Adjust the combination logic as needed
                 result = result * 100 + value; // Assumes each integer is a two-digit number
             }
-            alphabetDictionary = characterIndexMap;
 
             return result;
         }
@@ -228,7 +220,6 @@ namespace RSAEncrypt
                     char character1 = ' ';
                     char character2 = ' ';
 
-                    // Check if the part indices are in the indexCharacterMap Dictionary map
                     if (indexCharacterMap.ContainsKey(partIndex1))
                     {
                         character1 = indexCharacterMap[partIndex1];
@@ -323,16 +314,14 @@ namespace RSAEncrypt
         private void bt_Encrypt_Click(object sender, EventArgs e)
         {
             if (tb_PlainText.Text.Length % 2 == 1)
-                tb_PlainText.Text += '\b';
+                tb_PlainText.Text += ' ';
 
             if (lb_WarningD.Text == "Invalid input. Please enter a valid integer." ||
                 lb_WarningE.Text == "Invalid input. Please enter a valid integer." ||
                 lb_WarningP.Text == "Invalid input. Please enter a valid integer." ||
                 lb_WarningQ.Text == "Invalid input. Please enter a valid integer." ||
-                lb_WarningD.Text == "" ||
-                lb_WarningE.Text == "" ||
-                lb_WarningP.Text == "" ||
-                lb_WarningQ.Text == "")
+                lb_WarningD.Text == "" || lb_WarningE.Text == "" || lb_WarningP.Text == "" ||
+                lb_WarningQ.Text == "" || tb_PlainText.Text == "")
             {
                 MessageBox.Show("Invalid input. Please try again", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -353,7 +342,6 @@ namespace RSAEncrypt
                     foreach (BigInteger bigInt in encryptedCipherText)
                     {
                         tb_CipherText.AppendText(bigInt.ToString());
-                        tb_CipherText.AppendText(" ");
                     }
 
                 }
@@ -388,7 +376,7 @@ namespace RSAEncrypt
             //int dValue = Int32.Parse(tb_dValue.Text.ToString());
 
             string decryptedText = ConvertIndicesToOriginalString(decryptedCipherText);
-            textBox1.Text = decryptedText;
+            tb_DecryptedText.Text = decryptedText;
         }
 
         private void bt_CalcN_Click(object sender, EventArgs e)
@@ -415,13 +403,13 @@ namespace RSAEncrypt
         //
         private void bt_GenerateP_Click(object sender, EventArgs e)
         {
-            BigInteger bigInt = BigInt.Program.GenerateRandomPrime(5);
+            BigInteger bigInt = BigInt.Program.GenerateRandomPrime(20);
             tb_PrimeP.Text = bigInt.ToString();
         }
 
         private void bt_GenerateQ_Click(object sender, EventArgs e)
         {
-            BigInteger bigInt = BigInt.Program.GenerateRandomPrime(5);
+            BigInteger bigInt = BigInt.Program.GenerateRandomPrime(20);
             tb_PrimeQ.Text = bigInt.ToString();
         }
 
@@ -430,15 +418,21 @@ namespace RSAEncrypt
         //
         private void bt_GenerateE_Click(object sender, EventArgs e)
         {
-            BigInteger eValue = new BigInteger();
-            BigInteger uValue = BigInteger.Parse(tb_uValue.Text);
-            do
+            if (BigInteger.TryParse(tb_uValue.Text, out BigInteger uValue))
             {
-                eValue = BigInt.Program.GenerateRandomPrime(5);
+                BigInteger eValue = new BigInteger();
+                do
+                {
+                    eValue = BigInt.Program.GenerateRandomPrime(20);
 
-            } while (eValue >= uValue);
+                } while (eValue >= uValue);
 
-            tb_eValue.Text = eValue.ToString();
+                tb_eValue.Text = eValue.ToString();
+            }
+            else
+            {
+                MessageBox.Show("Missing input value. Please try again", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
         }
 
@@ -513,7 +507,18 @@ namespace RSAEncrypt
             }
         }
 
-
+        private void bt_Clear_Click(object sender, EventArgs e)
+        {
+            tb_PrimeP.Clear();
+            tb_PrimeQ.Clear();
+            tb_eValue.Clear();
+            tb_nValue.Clear();
+            tb_uValue.Clear();
+            tb_dValue.Clear();
+            tb_PlainText.Clear();
+            tb_CipherText.Clear();
+            tb_DecryptedText.Clear();
+        }
     }
 }
 

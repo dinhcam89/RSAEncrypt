@@ -111,14 +111,14 @@ namespace BigInt
             return prime;
         }
 
-        public static BigInteger ModularInverse(BigInteger a, BigInteger n)
+        public static BigInteger ModularInverse(BigInteger e, BigInteger u)
         {
             BigInteger x = 0, y = 0;
-            BigInteger r = ExtendedGCD(a, n, ref x, ref y);
+            BigInteger r = ExtendedGCD(e, u, ref x, ref y);
 
             if (r == 1)
             {
-                x = (x % n + n) % n; // Ensure x is positive
+                x = (x % u + u) % u; // Ensure x is positive
                 return x;
             }
             return -1; // Modular inverse doesn't exist
