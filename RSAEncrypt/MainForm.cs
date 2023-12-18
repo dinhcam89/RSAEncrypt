@@ -1,5 +1,7 @@
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using BigInt;
@@ -13,8 +15,8 @@ namespace RSAEncrypt
         {
             InitializeComponent();
         }
-
-        public List<BigInteger> cipherText = new List<BigInteger>();
+        Random random = new Random();
+        public List<int> cipherText = new List<int>();
 
         static bool IsPrime(int number)
         {
@@ -35,12 +37,26 @@ namespace RSAEncrypt
             return true;
         }
 
+        static int GetRandomPrimeNumber(Random random)
+        {
+            int randomNum;
+
+            do
+            {
+                // Tạo một số ngẫu nhiên
+                randomNum = random.Next(2, 100); // Thay đổi khoảng số ngẫu nhiên tùy ý
+
+            } while (!IsPrime(randomNum)); // Lặp lại cho đến khi số ngẫu nhiên là số nguyên tố
+
+            return randomNum;
+        }
+
         //
         //  VALID CHECK FOR P, Q VALUE
         //
         private void tb_PrimeP_TextChanged(object sender, EventArgs e)
         {
-            if (BigInteger.TryParse(tb_PrimeP.Text, out BigInteger bigInt))
+            if (int.TryParse(tb_PrimeP.Text, out int bigInt))
             {
                 //Check prime for "int" value
                 if (bigInt < Int32.MaxValue)
@@ -81,27 +97,13 @@ namespace RSAEncrypt
 
         private void tb_PrimeQ_TextChanged(object sender, EventArgs e)
         {
-            if (BigInteger.TryParse(tb_PrimeQ.Text, out BigInteger bigInt))
+            if (int.TryParse(tb_PrimeQ.Text, out int bigInt))
             {
                 //Check prime for "int" value
                 if (bigInt < Int32.MaxValue)
                 {
                     int smallInt = (int)bigInt;
                     if (IsPrime(smallInt))
-                    {
-                        lb_WarningQ.ForeColor = System.Drawing.Color.Green;
-                        lb_WarningQ.Text = "Valid Input!";
-                    }
-                    else
-                    {
-                        lb_WarningQ.ForeColor = System.Drawing.Color.Red;
-                        lb_WarningQ.Text = "Invalid input. Please enter a valid integer.";
-                    }
-                }
-                //Check prime for "BigInt" value
-                else
-                {
-                    if (BigInt.Program.isPrime(bigInt))
                     {
                         lb_WarningQ.ForeColor = System.Drawing.Color.Green;
                         lb_WarningQ.Text = "Valid Input!";
@@ -119,14 +121,11 @@ namespace RSAEncrypt
                 lb_WarningQ.Text = "Invalid input. Please enter a valid integer.";
             }
         }
-        //
-        //
-        //
 
         //
         //MAPPING STRING PARTS WITH CORRESPONDING INTERGER POSITION
         //
-        static BigInteger ConvertToAlphabetIndex(string input)
+        static int ConvertToAlphabetIndex(string input)
         {
             char[] nonAlphabetCharacters = {
                 ' ', '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',',
@@ -134,7 +133,7 @@ namespace RSAEncrypt
                 '_', '`', '{', '|', '}', '~'
             };
 
-            Dictionary<char, BigInteger> characterIndexMap = new Dictionary<char, BigInteger>();
+            Dictionary<char, int> characterIndexMap = new Dictionary<char, int>();
 
             int currentIndex = 52; // Start the index from 52
 
@@ -144,7 +143,7 @@ namespace RSAEncrypt
                 currentIndex++;
             }
 
-            List<BigInteger> indicesList = new List<BigInteger>();
+            List<int> indicesList = new List<int>();
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
@@ -164,7 +163,7 @@ namespace RSAEncrypt
                 }
                 else if (characterIndexMap.ContainsKey(c))
                 {
-                    BigInteger index = characterIndexMap[c];
+                    int index = characterIndexMap[c];
                     indicesList.Add(index);
                 }
                 else
@@ -183,7 +182,7 @@ namespace RSAEncrypt
 
             return result;
         }
-        static string ConvertIndicesToOriginalString(List<BigInteger> indices)
+        static string ConvertIndicesToOriginalString(List<int> indices)
         {
             char[] nonAlphabetCharacters = {
                 ' ', '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',',
@@ -191,9 +190,9 @@ namespace RSAEncrypt
                 '_', '`', '{', '|', '}', '~'
             };
 
-            Dictionary<BigInteger, char> indexCharacterMap = new Dictionary<BigInteger, char>();
+            Dictionary<int, char> indexCharacterMap = new Dictionary<int, char>();
 
-            BigInteger currentIndex = 52; // Start the index from 52
+            int currentIndex = 52; // Start the index from 52
 
             foreach (char c in nonAlphabetCharacters)
             {
@@ -203,7 +202,7 @@ namespace RSAEncrypt
 
             string result = "";
 
-            foreach (BigInteger index in indices)
+            foreach (int index in indices)
             {
                 string indexString = index.ToString();
 
@@ -215,7 +214,7 @@ namespace RSAEncrypt
                 string part1 = indexString.Substring(0, 2);
                 string part2 = indexString.Substring(2, 2);
 
-                if (int.TryParse(part1, out int partIndex1) && int.TryParse(part2, out int partIndex2))
+                if (Int32.TryParse(part1, out int partIndex1) && Int32.TryParse(part2, out int partIndex2))
                 {
                     char character1 = ' ';
                     char character2 = ' ';
@@ -283,9 +282,9 @@ namespace RSAEncrypt
         //
         //CONVERT STRING AND STORE MAPPING VALUE TO LIST
         //
-        static List<BigInteger> ConvertAndStoreIndexParts(string input, int partLength)
+        static List<int> ConvertAndStoreIndexParts(string input, int partLength)
         {
-            List<BigInteger> integerList = new List<BigInteger>();
+            List<int> integerList = new List<int>();
 
             foreach (string part in SplitStringIntoParts(input, partLength))
             {
@@ -293,17 +292,41 @@ namespace RSAEncrypt
             }
             return integerList;
         }
-
-        private List<BigInteger> rsaEncrypt(List<BigInteger> intList)
+        //
+        // MOD POW FUNCTION FOR ENCRYPT
+        //
+        static int ModPow(int baseNumber, int exponent, int modulus)
         {
-            List<BigInteger> encryptedInt = new List<BigInteger>();
+            if (modulus == 1)
+                return 0;
 
-            BigInteger eValue = BigInteger.Parse(tb_eValue.Text);
-            BigInteger nValue = BigInteger.Parse(tb_nValue.Text);
+            int result = 1;
+            baseNumber = baseNumber % modulus;
 
-            foreach (BigInteger intValue in intList)
+            while (exponent > 0)
             {
-                BigInteger temp = BigInteger.ModPow(intValue, eValue, nValue);
+                // Nếu exponent là số lẻ, nhân kết quả với baseNumber
+                if (exponent % 2 == 1)
+                    result = (result * baseNumber) % modulus;
+
+                // exponent chia đôi, baseNumber bình phương
+                exponent >>= 1;
+                baseNumber = (baseNumber * baseNumber) % modulus;
+            }
+
+            return result;
+        }
+
+        private List<int> rsaEncrypt(List<int> intList)
+        {
+            List<int> encryptedInt = new List<int>();
+
+            int eValue = int.Parse(tb_eValue.Text);
+            int nValue = int.Parse(tb_nValue.Text);
+
+            foreach (int intValue in intList)
+            {
+                int temp = ModPow(intValue, eValue, nValue);
                 encryptedInt.Add(temp);
                 cipherText.Add(temp);
             }
@@ -328,36 +351,33 @@ namespace RSAEncrypt
             else
             {
                 string input = tb_PlainText.Text;
-                List<BigInteger> indices;
+                List<int> indices;
                 indices = ConvertAndStoreIndexParts(input, 2);
 
-                List<BigInteger> encryptedCipherText = new List<BigInteger>();
+                List<int> encryptedCipherText = new List<int>();
 
                 //int eValue = Int32.Parse(tb_eValue.Text.ToString());
                 //int dValue = Int32.Parse(tb_dValue.Text.ToString());
 
                 encryptedCipherText = rsaEncrypt(indices);
-                foreach (int intValue in indices)
-                {
-                    foreach (BigInteger bigInt in encryptedCipherText)
-                    {
-                        tb_CipherText.AppendText(bigInt.ToString());
-                    }
 
+                foreach (int bigInt in encryptedCipherText)
+                {
+                    tb_CipherText.AppendText(bigInt.ToString());
                 }
             }
         }
 
-        private List<BigInteger> rsaDecrypt(List<BigInteger> intList)
+        private List<int> rsaDecrypt(List<int> intList)
         {
-            List<BigInteger> encryptedInt = new List<BigInteger>();
+            List<int> encryptedInt = new List<int>();
 
-            BigInteger dValue = BigInteger.Parse(tb_dValue.Text);
-            BigInteger nValue = BigInteger.Parse(tb_nValue.Text);
+            int dValue = int.Parse(tb_dValue.Text);
+            int nValue = int.Parse(tb_nValue.Text);
 
-            foreach (BigInteger intValue in intList)
+            foreach (int intValue in intList)
             {
-                BigInteger temp = BigInteger.ModPow(intValue, dValue, nValue);
+                int temp = ModPow(intValue, dValue, nValue);
                 encryptedInt.Add(temp);
             }
 
@@ -366,7 +386,7 @@ namespace RSAEncrypt
 
         private void bt_Decrypt_Click(object sender, EventArgs e)
         {
-            List<BigInteger> decryptedCipherText = new List<BigInteger>();
+            List<int> decryptedCipherText = new List<int>();
 
             //int eValue = Int32.Parse(tb_eValue.Text.ToString());
             //int dValue = Int32.Parse(tb_dValue.Text.ToString());
@@ -381,20 +401,20 @@ namespace RSAEncrypt
 
         private void bt_CalcN_Click(object sender, EventArgs e)
         {
-            BigInteger pValue = BigInteger.Parse(tb_PrimeP.Text);
-            BigInteger qValue = BigInteger.Parse(tb_PrimeQ.Text);
+            int pValue = int.Parse(tb_PrimeP.Text);
+            int qValue = int.Parse(tb_PrimeQ.Text);
 
-            BigInteger nValue = pValue * qValue;
+            int nValue = pValue * qValue;
             tb_nValue.Text = nValue.ToString();
         }
 
         private void bt_CalcU_Click(object sender, EventArgs e)
         {
-            BigInteger pValue = BigInteger.Parse(tb_PrimeP.Text);
-            BigInteger qValue = BigInteger.Parse(tb_PrimeQ.Text);
+            int pValue = int.Parse(tb_PrimeP.Text);
+            int qValue = int.Parse(tb_PrimeQ.Text);
 
             //
-            BigInteger uValue = (pValue - 1) * (qValue - 1);
+            int uValue = (pValue - 1) * (qValue - 1);
             tb_uValue.Text = uValue.ToString();
         }
 
@@ -403,14 +423,14 @@ namespace RSAEncrypt
         //
         private void bt_GenerateP_Click(object sender, EventArgs e)
         {
-            BigInteger bigInt = BigInt.Program.GenerateRandomPrime(20);
-            tb_PrimeP.Text = bigInt.ToString();
+            int pValue = GetRandomPrimeNumber(random);
+            tb_PrimeP.Text = pValue.ToString();
         }
 
         private void bt_GenerateQ_Click(object sender, EventArgs e)
         {
-            BigInteger bigInt = BigInt.Program.GenerateRandomPrime(20);
-            tb_PrimeQ.Text = bigInt.ToString();
+            int qValue = GetRandomPrimeNumber(random);
+            tb_PrimeQ.Text = qValue.ToString();
         }
 
         //
@@ -418,12 +438,12 @@ namespace RSAEncrypt
         //
         private void bt_GenerateE_Click(object sender, EventArgs e)
         {
-            if (BigInteger.TryParse(tb_uValue.Text, out BigInteger uValue))
+            if (int.TryParse(tb_uValue.Text, out int uValue))
             {
-                BigInteger eValue = new BigInteger();
+                int eValue;
                 do
                 {
-                    eValue = BigInt.Program.GenerateRandomPrime(20);
+                    eValue = GetRandomPrimeNumber(random);
 
                 } while (eValue >= uValue);
 
@@ -438,11 +458,11 @@ namespace RSAEncrypt
 
         private void tb_eValue_TextChanged(object sender, EventArgs e)
         {
-            if (BigInteger.TryParse(tb_eValue.Text, out BigInteger bigE)
-                && BigInteger.TryParse(tb_uValue.Text, out BigInteger bigU))
+            if (int.TryParse(tb_eValue.Text, out int bigE)
+                && int.TryParse(tb_uValue.Text, out int bigU))
             {
-                BigInteger eValue = BigInteger.Parse(tb_eValue.Text);
-                BigInteger uValue = BigInteger.Parse(tb_uValue.Text);
+                int eValue = int.Parse(tb_eValue.Text);
+                int uValue = int.Parse(tb_uValue.Text);
 
                 if (BigInt.Program.GCD(eValue, uValue) == 1)
                 {
@@ -465,11 +485,11 @@ namespace RSAEncrypt
 
         private void bt_CalcD_Click(object sender, EventArgs e)
         {
-            if (BigInteger.TryParse(tb_eValue.Text, out BigInteger eValue))
+            if (int.TryParse(tb_eValue.Text, out int eValue))
             {
-                BigInteger uValue = BigInteger.Parse(tb_uValue.Text);
+                int uValue = int.Parse(tb_uValue.Text);
 
-                BigInteger dValue = BigInt.Program.ModularInverse(eValue, uValue);
+                int dValue = GetRandomPrimeNumber(random);
 
                 tb_dValue.Text = dValue.ToString();
             }
@@ -483,9 +503,9 @@ namespace RSAEncrypt
         private void tb_dValue_TextChanged(object sender, EventArgs e)
         {
 
-            if (BigInteger.TryParse(tb_eValue.Text, out BigInteger bigE)
-                && BigInteger.TryParse(tb_uValue.Text, out BigInteger bigU)
-                && BigInteger.TryParse(tb_dValue.Text, out BigInteger bigD))
+            if (int.TryParse(tb_eValue.Text, out int bigE)
+                && int.TryParse(tb_uValue.Text, out int bigU)
+                && int.TryParse(tb_dValue.Text, out int bigD))
             {
 
                 if (BigInt.Program.GCD(bigE * bigD, bigU) == 1)
@@ -520,5 +540,12 @@ namespace RSAEncrypt
             tb_DecryptedText.Clear();
         }
     }
+
+
+
+
+    //
+    //          PLAYFAIR ENCRYPT HANDLING
+    //
 }
 

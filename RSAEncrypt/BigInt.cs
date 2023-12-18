@@ -118,7 +118,7 @@ namespace BigInt
 
             if (r == 1)
             {
-                x = (x % u + u) % u; // Ensure x is positive
+                x = (x % u + u) % u; // Make sure x is positive
                 return x;
             }
             return -1; // Modular inverse doesn't exist
