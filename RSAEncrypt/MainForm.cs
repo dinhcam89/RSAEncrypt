@@ -56,7 +56,7 @@ namespace RSAEncrypt
         //
         private void tb_PrimeP_TextChanged(object sender, EventArgs e)
         {
-            if (int.TryParse(tb_PrimeP.Text, out int bigInt))
+            if (Int32.TryParse(tb_PrimeP.Text, out int bigInt))
             {
                 //Check prime for "int" value
                 if (bigInt < Int32.MaxValue)
@@ -97,7 +97,7 @@ namespace RSAEncrypt
 
         private void tb_PrimeQ_TextChanged(object sender, EventArgs e)
         {
-            if (int.TryParse(tb_PrimeQ.Text, out int bigInt))
+            if (Int32.TryParse(tb_PrimeQ.Text, out int bigInt))
             {
                 //Check prime for "int" value
                 if (bigInt < Int32.MaxValue)
@@ -321,8 +321,8 @@ namespace RSAEncrypt
         {
             List<int> encryptedInt = new List<int>();
 
-            int eValue = int.Parse(tb_eValue.Text);
-            int nValue = int.Parse(tb_nValue.Text);
+            int eValue = Int32.Parse(tb_eValue.Text);
+            int nValue = Int32.Parse(tb_nValue.Text);
 
             foreach (int intValue in intList)
             {
@@ -372,8 +372,8 @@ namespace RSAEncrypt
         {
             List<int> encryptedInt = new List<int>();
 
-            int dValue = int.Parse(tb_dValue.Text);
-            int nValue = int.Parse(tb_nValue.Text);
+            int dValue = Int32.Parse(tb_dValue.Text);
+            int nValue = Int32.Parse(tb_nValue.Text);
 
             foreach (int intValue in intList)
             {
@@ -401,8 +401,8 @@ namespace RSAEncrypt
 
         private void bt_CalcN_Click(object sender, EventArgs e)
         {
-            int pValue = int.Parse(tb_PrimeP.Text);
-            int qValue = int.Parse(tb_PrimeQ.Text);
+            int pValue = Int32.Parse(tb_PrimeP.Text);
+            int qValue = Int32.Parse(tb_PrimeQ.Text);
 
             int nValue = pValue * qValue;
             tb_nValue.Text = nValue.ToString();
@@ -410,8 +410,8 @@ namespace RSAEncrypt
 
         private void bt_CalcU_Click(object sender, EventArgs e)
         {
-            int pValue = int.Parse(tb_PrimeP.Text);
-            int qValue = int.Parse(tb_PrimeQ.Text);
+            int pValue = Int32.Parse(tb_PrimeP.Text);
+            int qValue = Int32.Parse(tb_PrimeQ.Text);
 
             //
             int uValue = (pValue - 1) * (qValue - 1);
@@ -438,7 +438,7 @@ namespace RSAEncrypt
         //
         private void bt_GenerateE_Click(object sender, EventArgs e)
         {
-            if (int.TryParse(tb_uValue.Text, out int uValue))
+            if (Int32.TryParse(tb_uValue.Text, out int uValue))
             {
                 int eValue;
                 do
@@ -458,11 +458,11 @@ namespace RSAEncrypt
 
         private void tb_eValue_TextChanged(object sender, EventArgs e)
         {
-            if (int.TryParse(tb_eValue.Text, out int bigE)
-                && int.TryParse(tb_uValue.Text, out int bigU))
+            if (Int32.TryParse(tb_eValue.Text, out int bigE)
+                && Int32.TryParse(tb_uValue.Text, out int bigU))
             {
-                int eValue = int.Parse(tb_eValue.Text);
-                int uValue = int.Parse(tb_uValue.Text);
+                int eValue = Int32.Parse(tb_eValue.Text);
+                int uValue = Int32.Parse(tb_uValue.Text);
 
                 if (BigInt.Program.GCD(eValue, uValue) == 1)
                 {
@@ -483,13 +483,59 @@ namespace RSAEncrypt
             }
         }
 
+        public static int ModularInverse(int e, int u)
+        {
+            int x = 0, y = 0;
+            int r = ExtendedGCD(e, u, ref x, ref y);
+
+            if (r == 1)
+            {
+                x = (x % u + u) % u; // Make sure x is positive
+                return x;
+            }
+            return -1; // Modular inverse doesn't exist
+        }
+
+        static int ExtendedGCD(int a, int b, ref int x, ref int y)
+        {
+            x = 1;
+            y = 0;
+
+            if (b == 0)
+                return a;
+
+            int new_x = 0;
+            int new_y = 1;
+            int new_r = b;
+            int r = a;
+            int quotient, tmp;
+
+            while (new_r != 0)
+            {
+                quotient = r / new_r;
+
+                tmp = r;
+                r = new_r;
+                new_r = tmp - quotient * new_r;
+
+                tmp = x;
+                x = new_x;
+                new_x = tmp - quotient * new_x;
+
+                tmp = y;
+                y = new_y;
+                new_y = tmp - quotient * new_y;
+            }
+
+            return r;
+        }
         private void bt_CalcD_Click(object sender, EventArgs e)
         {
-            if (int.TryParse(tb_eValue.Text, out int eValue))
+            if (Int32.TryParse(tb_eValue.Text, out int eValue))
             {
-                int uValue = int.Parse(tb_uValue.Text);
+                int uValue = Int32.Parse(tb_uValue.Text);
 
-                int dValue = GetRandomPrimeNumber(random);
+                int dValue = ModularInverse(eValue, uValue);
 
                 tb_dValue.Text = dValue.ToString();
             }
@@ -503,9 +549,9 @@ namespace RSAEncrypt
         private void tb_dValue_TextChanged(object sender, EventArgs e)
         {
 
-            if (int.TryParse(tb_eValue.Text, out int bigE)
-                && int.TryParse(tb_uValue.Text, out int bigU)
-                && int.TryParse(tb_dValue.Text, out int bigD))
+            if (Int32.TryParse(tb_eValue.Text, out int bigE)
+                && Int32.TryParse(tb_uValue.Text, out int bigU)
+                && Int32.TryParse(tb_dValue.Text, out int bigD))
             {
 
                 if (BigInt.Program.GCD(bigE * bigD, bigU) == 1)
