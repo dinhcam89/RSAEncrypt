@@ -1,1 +1,1 @@
-# C# Winform Application tool for RSA and Playfair Encryptionl
+# C# Winform Application tool for RSA and Playfair Encryption
