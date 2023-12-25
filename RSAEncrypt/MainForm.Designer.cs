@@ -338,7 +338,7 @@
             lb_WarningE.AutoSize = true;
             lb_WarningE.Font = new Font("Anton", 9.749999F, FontStyle.Italic, GraphicsUnit.Point);
             lb_WarningE.ForeColor = Color.FromArgb(0, 0, 192);
-            lb_WarningE.Location = new Point(434, 50);
+            lb_WarningE.Location = new Point(617, 79);
             lb_WarningE.Name = "lb_WarningE";
             lb_WarningE.Size = new Size(0, 19);
             lb_WarningE.TabIndex = 27;
@@ -389,7 +389,7 @@
             bt_Clear.Font = new Font("Anton", 15.75F, FontStyle.Regular, GraphicsUnit.Point);
             bt_Clear.Location = new Point(626, 476);
             bt_Clear.Name = "bt_Clear";
-            bt_Clear.Size = new Size(115, 40);
+            bt_Clear.Size = new Size(115, 46);
             bt_Clear.TabIndex = 32;
             bt_Clear.Text = "Clear";
             bt_Clear.UseVisualStyleBackColor = true;

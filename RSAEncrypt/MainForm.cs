@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Numerics;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,7 +17,7 @@ namespace RSAEncrypt
             InitializeComponent();
         }
         Random random = new Random();
-        public List<int> cipherText = new List<int>();
+        public List<int> cipherTextList = new List<int>();
 
         static bool IsPrime(int number)
         {
@@ -44,7 +45,7 @@ namespace RSAEncrypt
             do
             {
                 // Tạo một số ngẫu nhiên
-                randomNum = random.Next(2, 100); // Thay đổi khoảng số ngẫu nhiên tùy ý
+                randomNum = random.Next(20, 200); // Thay đổi khoảng số ngẫu nhiên tùy ý
 
             } while (!IsPrime(randomNum)); // Lặp lại cho đến khi số ngẫu nhiên là số nguyên tố
 
@@ -133,15 +134,30 @@ namespace RSAEncrypt
                 '_', '`', '{', '|', '}', '~'
             };
 
-            Dictionary<char, int> characterIndexMap = new Dictionary<char, int>();
+            char[] numberCharacters = {
+                '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
+            };
 
-            int currentIndex = 52; // Start the index from 52
+
+            Dictionary<char, int> characterIndexMap = new Dictionary<char, int>();
+            Dictionary<char, int> characterIndexMap2 = new Dictionary<char, int>();
+
+            int currentIndex2 = 85;
+            foreach (char c in numberCharacters)
+            {
+                characterIndexMap2[c] = currentIndex2;
+                currentIndex2++;
+            }
+
+
+            int currentIndex = 52; // Start the index from 52 for non alphabet index
 
             foreach (char c in nonAlphabetCharacters)
             {
                 characterIndexMap[c] = currentIndex;
                 currentIndex++;
             }
+
 
             List<int> indicesList = new List<int>();
             for (int i = 0; i < input.Length; i++)
@@ -166,9 +182,16 @@ namespace RSAEncrypt
                     int index = characterIndexMap[c];
                     indicesList.Add(index);
                 }
+                else if (characterIndexMap2.ContainsKey(c))
+                {
+                    int index = characterIndexMap2[c];
+                    indicesList.Add(index);
+                }
                 else
                 {
                     // For characters not in the mapping, you can skip or store a suitable value
+                    indicesList.Add(c);
+
                 }
             }
 
@@ -182,6 +205,7 @@ namespace RSAEncrypt
 
             return result;
         }
+
         static string ConvertIndicesToOriginalString(List<int> indices)
         {
             char[] nonAlphabetCharacters = {
@@ -189,11 +213,19 @@ namespace RSAEncrypt
                 '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^',
                 '_', '`', '{', '|', '}', '~'
             };
-
+            char[] numberCharacters = {
+                '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
+            };
             Dictionary<int, char> indexCharacterMap = new Dictionary<int, char>();
+            Dictionary<int, char> indexCharacterMap2 = new Dictionary<int, char>();
 
             int currentIndex = 52; // Start the index from 52
-
+            int currentIndex2 = 85;
+            foreach (char c in numberCharacters)
+            {
+                indexCharacterMap2[currentIndex2] = c;
+                currentIndex2++;
+            }
             foreach (char c in nonAlphabetCharacters)
             {
                 indexCharacterMap[currentIndex] = c;
@@ -223,6 +255,10 @@ namespace RSAEncrypt
                     {
                         character1 = indexCharacterMap[partIndex1];
                     }
+                    else if (indexCharacterMap2.ContainsKey(partIndex1))
+                    {
+                        character1 = indexCharacterMap2[partIndex1];
+                    }
                     else if (partIndex1 >= 0 && partIndex1 < 26)
                     {
                         character1 = (char)('a' + partIndex1);
@@ -233,12 +269,16 @@ namespace RSAEncrypt
                     }
                     else
                     {
-                        // EXCEPTION
+
                     }
 
                     if (indexCharacterMap.ContainsKey(partIndex2))
                     {
                         character2 = indexCharacterMap[partIndex2];
+                    }
+                    else if (indexCharacterMap2.ContainsKey(partIndex2))
+                    {
+                        character2 = indexCharacterMap2[partIndex2];
                     }
                     else if (partIndex2 >= 0 && partIndex2 < 26)
                     {
@@ -328,7 +368,7 @@ namespace RSAEncrypt
             {
                 int temp = ModPow(intValue, eValue, nValue);
                 encryptedInt.Add(temp);
-                cipherText.Add(temp);
+                cipherTextList.Add(temp);
             }
 
             return encryptedInt;
@@ -361,16 +401,16 @@ namespace RSAEncrypt
 
                 encryptedCipherText = rsaEncrypt(indices);
 
-                foreach (int bigInt in encryptedCipherText)
+                foreach (int indice in encryptedCipherText)
                 {
-                    tb_CipherText.AppendText(bigInt.ToString());
+                    tb_CipherText.AppendText(indice.ToString());
                 }
             }
         }
 
         private List<int> rsaDecrypt(List<int> intList)
         {
-            List<int> encryptedInt = new List<int>();
+            List<int> decryptedInt = new List<int>();
 
             int dValue = Int32.Parse(tb_dValue.Text);
             int nValue = Int32.Parse(tb_nValue.Text);
@@ -378,10 +418,10 @@ namespace RSAEncrypt
             foreach (int intValue in intList)
             {
                 int temp = ModPow(intValue, dValue, nValue);
-                encryptedInt.Add(temp);
+                decryptedInt.Add(temp);
             }
 
-            return encryptedInt;
+            return decryptedInt;
         }
 
         private void bt_Decrypt_Click(object sender, EventArgs e)
@@ -390,13 +430,14 @@ namespace RSAEncrypt
 
             //int eValue = Int32.Parse(tb_eValue.Text.ToString());
             //int dValue = Int32.Parse(tb_dValue.Text.ToString());
-
-            decryptedCipherText = rsaDecrypt(cipherText);
+            string cipherText = tb_CipherText.Text;
+            //decryptedCipherText = rsaDecrypt(cipherText);
             //int eValue = Int32.Parse(tb_eValue.Text.ToString());
             //int dValue = Int32.Parse(tb_dValue.Text.ToString());
 
-            string decryptedText = ConvertIndicesToOriginalString(decryptedCipherText);
-            tb_DecryptedText.Text = decryptedText;
+            string decryptedText = ConvertIndicesToOriginalString(rsaDecrypt(cipherTextList));
+            tb_DecryptedText.AppendText(decryptedText);
+            cipherTextList.Clear();
         }
 
         private void bt_CalcN_Click(object sender, EventArgs e)
@@ -584,6 +625,7 @@ namespace RSAEncrypt
             tb_PlainText.Clear();
             tb_CipherText.Clear();
             tb_DecryptedText.Clear();
+            cipherTextList.Clear();
         }
     }
 
